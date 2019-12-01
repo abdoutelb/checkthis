@@ -1,13 +1,14 @@
  {
     "name": "check this",
-    "version": "1",
+    "version": "1.4",
     "description": "Build a share extention!",
     "manifest_version": 2,
-    "permissions": ["contextMenus","tabs","webNavigation","http://*/*", "https://*/*"],
+    "permissions": ["contextMenus","tabs","notifications","webNavigation","http://*/*", "https://*/*"],
     "background": {
         "persistent": false,
         "scripts": [
-            "/background.js"
+            "/background.js",
+            "/select.js"
         ] 
     }
   }

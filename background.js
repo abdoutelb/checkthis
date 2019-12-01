@@ -1,7 +1,9 @@
-  chrome.contextMenus.create({
-    id: "some-command",
-    title: "share this",
-    contexts: ["all"]
+chrome.contextMenus.removeAll(function() {
+    chrome.contextMenus.create({
+        id: "checkMenu",
+        title: "check this",
+        contexts: ["all"]
+    }); 
 });
 
 function copyTextToClipboard(text) {
@@ -68,8 +70,18 @@ function findAndReplace(searchText, replacement, searchNode) {
 
 
 chrome.contextMenus.onClicked.addListener(function(info, tab) {
-    if (info.menuItemId == "some-command") {
-        copyTextToClipboard(info.pageUrl+"?weber="+info.selectionText);
+
+    if (info.menuItemId == "checkMenu") {
+        chrome.tabs.executeScript(null, {file: "select.js"});
+        
+        chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+            if(message.type == "notification" && message.options.title == "path"){
+                path = message.options.message;
+                //copyTextToClipboard(info.pageUrl+"?weber="+info.selectionText+"#"+path);
+                copyTextToClipboard(info.pageUrl+"?weber="+path);
+            }
+        });
+        
     }
 });
 
@@ -78,23 +90,13 @@ chrome.tabs.onUpdated.addListener( function( tabId,  changeInfo,  tab) {
     var regex = new RegExp("weber=*");
     //chrome.extension.getBackgroundPage();
     if(tab.url.match(regex)){
+        var current_div = decodeURIComponent(tab.url.split('weber=')[1]);
+        current_div = current_div.replace("?","")
         chrome.tabs.executeScript(null,{code:`
-        document.getElementsByTagName('p')[7].style.background = 'chartreuse';
-        scrollTo(500,500);
+        document.querySelector('${current_div}').style.backgroundColor = 'chartreuse';
+        document.querySelector('${current_div}').scrollIntoView({ alignToTop: 'false',behavior: 'smooth', block: 'start', inline: 'start' });
         console.log("still fire");
         `});
     }
 }
 });
-
-// chrome.webNavigation.onDOMContentLoaded.addListener(function(details) {
-    
-//     var regex = new RegExp("webz=*");
-//     if(details.url.match(regex)){
-//         chrome.tabs.executeScript(null,{code:`
-//         document.getElementsByTagName('p')[7].style.background = 'green';
-//         scrollTo(200,200);
-//         document.getElementsByTagName('span')[2].style.background = 'yellow';
-//         `});
-//     }
-// });
