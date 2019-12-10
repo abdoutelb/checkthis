@@ -42,8 +42,8 @@ chrome.contextMenus.onClicked.addListener(function(info, tab) {
         chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
             if(message.type == "notification" && message.options.title == "path"){
                 path = message.options.message;
-                //copyTextToClipboard(info.pageUrl+"?weber="+info.selectionText+"#"+path);
-                copyTextToClipboard(info.pageUrl+"?weber="+path);
+                var crypted_path = window.btoa(path);
+                copyTextToClipboard(info.pageUrl+"?weber="+crypted_path);
             }
         });
         
@@ -55,8 +55,9 @@ chrome.tabs.onUpdated.addListener( function( tabId,  changeInfo,  tab) {
     var regex = new RegExp("weber=*");
     //chrome.extension.getBackgroundPage();
     if(tab.url.match(regex)){
-        var current_div = decodeURIComponent(tab.url.split('weber=')[1]);
-        current_div = current_div.replace("?","")
+        var current_encode_div = decodeURIComponent(tab.url.split('weber=')[1]);
+        current_encode_div = current_encode_div.replace("?","")
+        current_div = window.atob(current_encode_div);
         chrome.tabs.executeScript(null,{code:`
         document.querySelector('${current_div}').style.backgroundColor = 'chartreuse';
         document.querySelector('${current_div}').scrollIntoView({ alignToTop: 'false',behavior: 'smooth', block: 'start', inline: 'start' });
