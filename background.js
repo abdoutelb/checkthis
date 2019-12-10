@@ -61,7 +61,6 @@ chrome.tabs.onUpdated.addListener( function( tabId,  changeInfo,  tab) {
         chrome.tabs.executeScript(null,{code:`
         document.querySelector('${current_div}').style.backgroundColor = 'chartreuse';
         document.querySelector('${current_div}').scrollIntoView({ alignToTop: 'false',behavior: 'smooth', block: 'start', inline: 'start' });
-        console.log("still fire");
         `});
     }
 }
